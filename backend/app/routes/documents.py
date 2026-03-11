@@ -26,12 +26,29 @@ def upload_document(file: UploadFile = File(...), db: Session = Depends(get_db),
     allowed_types = ["text/plain", "application/pdf"]
     if file.content_type not in allowed_types:
         raise HTTPException(status_code=400, detail="Only TXT and PDF files are allowed")
+    
+    contents = file.file.read()
+    if len(contents) > 5 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="File size must be under 5MB")
+    file.file.seek(0)
+
+    existing = db.query(Document).filter(
+        Document.filename == file.filename,
+        Document.user_id == current_user.id
+    ).first()
+    if existing:
+        raise HTTPException(status_code=400, detail="A document with this name already exists")
+
     upload_dir = "uploads"
     os.makedirs(upload_dir, exist_ok=True)
     file_path = os.path.join(upload_dir, file.filename)
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
+    
     extracted_text = extract_text(file_path, file.content_type)
+    if not extracted_text.strip():
+        raise HTTPException(status_code=400, detail="Could not extract text from this file")
+
     document = Document(filename=file.filename, content=extracted_text, user_id=current_user.id)
     db.add(document)
     db.commit()
@@ -41,7 +58,7 @@ def upload_document(file: UploadFile = File(...), db: Session = Depends(get_db),
         doc_chunk = DocumentChunk(content=chunk, document_id=document.id)
         db.add(doc_chunk)
     db.commit()
-    return {"message": "File uploaded, text extracted and chunked successfully", "document_id": document.id, "chunks_created": len(chunks)}
+    return {"message": "File uploaded successfully", "document_id": document.id, "chunks_created": len(chunks)}
 
 @router.get("/")
 def get_documents(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
