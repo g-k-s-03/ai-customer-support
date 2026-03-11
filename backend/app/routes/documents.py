@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models import Document, User
 from app.security import verify_token
+from app.services.document_processor import extract_text
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import shutil
 import os
@@ -30,11 +31,12 @@ def upload_document(file: UploadFile = File(...), db: Session = Depends(get_db),
     file_path = os.path.join(upload_dir, file.filename)
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
-    document = Document(filename=file.filename, content="", user_id=current_user.id)
+    extracted_text = extract_text(file_path, file.content_type)
+    document = Document(filename=file.filename, content=extracted_text, user_id=current_user.id)
     db.add(document)
     db.commit()
     db.refresh(document)
-    return {"message": "File uploaded successfully", "document_id": document.id}
+    return {"message": "File uploaded and text extracted successfully", "document_id": document.id}
 
 @router.get("/")
 def get_documents(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
