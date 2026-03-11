@@ -10,3 +10,5 @@ python-multipart
 aiofiles
 pypdf2
 google-generativeai
+google-genai
+groq

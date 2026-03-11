@@ -1,12 +1,10 @@
-import google.generativeai as genai
+from groq import Groq
 from dotenv import load_dotenv
 import os
 
 load_dotenv()
 
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-
-model = genai.GenerativeModel("gemini-1.5-flash")
+client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 def generate_answer(question: str, context_chunks: list) -> str:
     if not context_chunks:
@@ -25,5 +23,8 @@ Question: {question}
 
 Answer:"""
     
-    response = model.generate_content(prompt)
-    return response.text
+    response = client.chat.completions.create(
+        model="llama-3.1-8b-instant",
+        messages=[{"role": "user", "content": prompt}]
+    )
+    return response.choices[0].message.content
