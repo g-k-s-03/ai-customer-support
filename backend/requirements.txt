@@ -9,3 +9,4 @@ python-jose[cryptography]
 python-multipart
 aiofiles
 pypdf2
+google-generativeai
