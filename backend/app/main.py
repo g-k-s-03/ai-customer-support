@@ -1,13 +1,14 @@
 from fastapi import FastAPI
 from app.database import engine
 from app.models import Base
-from app.routes import auth
+from app.routes import auth, documents
 
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
 app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
+app.include_router(documents.router, prefix="/documents", tags=["Documents"])
 
 @app.get("/")
 def root():
