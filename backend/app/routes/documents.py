@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
 from app.database import get_db
-from app.models import Document, User
+from app.models import Document, DocumentChunk, User
 from app.security import verify_token
-from app.services.document_processor import extract_text
+from app.services.document_processor import extract_text, chunk_text
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import shutil
 import os
@@ -36,7 +36,12 @@ def upload_document(file: UploadFile = File(...), db: Session = Depends(get_db),
     db.add(document)
     db.commit()
     db.refresh(document)
-    return {"message": "File uploaded and text extracted successfully", "document_id": document.id}
+    chunks = chunk_text(extracted_text)
+    for chunk in chunks:
+        doc_chunk = DocumentChunk(content=chunk, document_id=document.id)
+        db.add(doc_chunk)
+    db.commit()
+    return {"message": "File uploaded, text extracted and chunked successfully", "document_id": document.id, "chunks_created": len(chunks)}
 
 @router.get("/")
 def get_documents(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):

@@ -19,3 +19,13 @@ def extract_text(file_path: str, content_type: str) -> str:
     elif content_type == "application/pdf":
         return extract_text_from_pdf(file_path)
     return ""
+
+def chunk_text(text: str, chunk_size: int = 500, overlap: int = 50) -> list:
+    words = text.split()
+    chunks = []
+    i = 0
+    while i < len(words):
+        chunk = " ".join(words[i:i + chunk_size])
+        chunks.append(chunk)
+        i += chunk_size - overlap
+    return chunks
