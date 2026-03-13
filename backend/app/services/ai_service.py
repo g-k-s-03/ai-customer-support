@@ -12,9 +12,10 @@ def generate_answer(question: str, context_chunks: list) -> str:
     
     context = "\n\n".join(context_chunks)
     
-    prompt = f"""You are a helpful customer support assistant. 
-Use the following document context to answer the user's question accurately.
-Only answer based on the provided context. If the answer is not in the context, say so.
+    prompt = f"""You are a helpful customer support assistant.
+Use the following document context to answer the user's question.
+Try your best to answer based on the context. If you can make a reasonable inference, do so.
+Only say you don't know if there is truly no relevant information.
 
 Context:
 {context}
