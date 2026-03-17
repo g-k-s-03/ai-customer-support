@@ -5,6 +5,11 @@ from app.models import Base
 from app.routes import auth, documents, chat
 import logging
 import os
+import sys 
+
+print(f"DATABASE_URL exists: {bool(os.getenv('DATABASE_URL'))}", flush=True)
+print(f"GROQ_API_KEY exists: {bool(os.getenv('GROQ_API_KEY'))}", flush=True)
+print(f"SECRET_KEY exists: {bool(os.getenv('SECRET_KEY'))}", flush=True)
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
