@@ -4,7 +4,11 @@ import os
 
 load_dotenv()
 
-client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+def get_groq_client():
+    api_key = os.getenv("GROQ_API_KEY")
+    if not api_key:
+        raise ValueError("GROQ_API_KEY environment variable is not set!")
+    return Groq(api_key=api_key)
 
 def generate_answer(question: str, context_chunks: list) -> str:
     if not context_chunks:
@@ -24,6 +28,7 @@ Question: {question}
 
 Answer:"""
     
+    client = get_groq_client()  # creates client only when needed
     response = client.chat.completions.create(
         model="llama-3.1-8b-instant",
         messages=[{"role": "user", "content": prompt}]
