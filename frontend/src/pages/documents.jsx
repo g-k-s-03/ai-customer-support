@@ -5,11 +5,10 @@ export default function Documents({ token }) {
   const [documents, setDocuments] = useState([]);
   const [file, setFile] = useState(null);
   const [message, setMessage] = useState("");
-
   const headers = { Authorization: `Bearer ${token}` };
 
   const fetchDocuments = async () => {
-    const res = await axios.get("http://localhost:8000/documents/", { headers });
+    const res = await axios.get(`${import.meta.env.VITE_API_URL}/documents/`, { headers });
     setDocuments(res.data);
   };
 
@@ -21,7 +20,7 @@ export default function Documents({ token }) {
     formData.append("file", file);
     try {
       setMessage("Uploading...");
-      await axios.post("http://localhost:8000/documents/upload", formData, {
+      await axios.post(`${import.meta.env.VITE_API_URL}/documents/upload`, formData, {
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" }
       });
       setMessage("File uploaded successfully!");
@@ -33,7 +32,7 @@ export default function Documents({ token }) {
   };
 
   const handleDelete = async (id) => {
-    await axios.delete(`http://localhost:8000/documents/${id}`, { headers });
+    await axios.delete(`${import.meta.env.VITE_API_URL}/documents/${id}`, { headers });
     fetchDocuments();
   };
 
