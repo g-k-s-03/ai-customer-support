@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import Login from "./pages/Login";
+import Login from "./pages/login"
 import Register from "./pages/Register";
-import Documents from "./pages/Documents";
-import Chat from "./pages/Chat";
+import Documents from "./pages/documents"
+import Chat from "./pages/chat"
 
 export default function App() {
   const [token, setToken] = useState(localStorage.getItem("token") || "");
