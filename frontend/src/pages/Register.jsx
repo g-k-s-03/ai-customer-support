@@ -9,7 +9,7 @@ export default function Register({ goToLogin }) {
 
   const handleRegister = async () => {
     try {
-      await axios.post("http://localhost:8000/auth/register", { email, password });
+      await axios.post(`${import.meta.env.VITE_API_URL}/auth/register`, { email, password });
       setSuccess("Account created! Please login.");
       setError("");
     } catch (err) {
