@@ -6,7 +6,6 @@ export default function Chat({ token }) {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [sessionId, setSessionId] = useState(null);
-
   const headers = { Authorization: `Bearer ${token}` };
 
   const handleAsk = async () => {
@@ -18,8 +17,8 @@ export default function Chat({ token }) {
     try {
       const body = { question: userMessage };
       if (sessionId) body.session_id = sessionId;
-      
-      const res = await axios.post("http://localhost:8000/chat/ask", body, { headers });
+
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/chat/ask`, body, { headers });
       setSessionId(res.data.session_id);
       setMessages(prev => [...prev, { role: "ai", content: res.data.answer }]);
     } catch (err) {
